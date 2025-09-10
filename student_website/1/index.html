@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pac-Man</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Pac-Man</h1>
+    <div id="game-container">
+        <canvas id="gameCanvas"></canvas>
+        <div id="score-container">
+            <h2>Score: <span id="score">0</span></h2>
+        </div>
+    </div>
+    <div id="game-over" class="hidden">
+        <h2>Game Over</h2>
+        <button id="restart-button">Restart</button>
+    </div>
+     <div id="victory" class="hidden">
+        <h2>You Win!</h2>
+        <button id="restart-button-victory">Restart</button>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
