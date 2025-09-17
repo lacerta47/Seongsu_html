@@ -1,247 +1,40 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
-    <title>점프 점프!</title>
-    <style>
-        body {
-            display: flex; justify-content: center; align-items: center;
-            height: 100vh; margin: 0; background-color: #333;
-        }
-        #game-container {
-            position: relative;
-        }
-        #menu {
-            position: absolute; top: 0; left: 0;
-            width: 800px; height: 600px;
-            background: rgba(0, 0, 0, 0.8); color: white;
-            display: flex; flex-direction: column;
-            justify-content: center; align-items: center;
-            text-align: center; z-index: 10;
-        }
-        #menu h1 { font-size: 70px; margin-bottom: 20px; color: #ffdd00; }
-        #menu button {
-            font-size: 24px; padding: 12px 25px; margin: 10px;
-            cursor: pointer; background-color: #ffaa00; color: #fff;
-            border: none; border-radius: 5px; transition: background-color 0.3s;
-        }
-        #menu button:hover { background-color: #ffc340; }
-        #how-to-play { margin-top: 30px; font-size: 18px; }
-        canvas {
-            border: 2px solid black; background-color: #add8e6;
-            display: none; /* Initially hidden */
-        }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>공 피하기</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div id="game-container">
-        <div id="menu">
-            <h1>점프 점프!</h1>
-            <div id="stage-select"></div>
-            <div id="how-to-play">
-                <h2>- 조작 방법 -</h2>
-                <p>W: 점프 / A: 왼쪽 / D: 오른쪽</p>
+        <canvas id="game-canvas"></canvas>
+        <div id="ui-container">
+            <div id="stats">
+                <span>점수: <span id="score">0</span></span>
+                <span>시간: <span id="time">0</span>초</span>
+                <span>목숨: <span id="lives">3</span></span>
+            </div>
+            <div id="start-screen">
+                <h1>공 피하기</h1>
+                <button id="start-button">시작</button>
+            </div>
+            <div id="game-over-screen" class="hidden">
+                <h2>게임 종료</h2>
+                <p>최종 점수: <span id="final-score">0</span></p>
+                <button id="restart-button">다시 시작</button>
             </div>
         </div>
-        <canvas id="gameCanvas" width="800" height="600"></canvas>
+        <div id="mobile-controls" class="hidden">
+            <button id="left-btn">◀</button>
+            <button id="right-btn">▶</button>
+        </div>
     </div>
 
-    <script>
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-        const menu = document.getElementById('menu');
-        const stageSelect = document.getElementById('stage-select');
+    <audio id="collision-sound" src="sounds/collision.mp3"></audio>
+    <audio id="gameover-sound" src="sounds/gameover.mp3"></audio>
+    <audio id="levelup-sound" src="sounds/levelup.mp3"></audio>
 
-        const GameState = { MENU: 0, PLAYING: 1, LEVEL_CLEAR: 2, GAME_OVER: 3 };
-        let currentGameState = GameState.MENU;
-
-        const sounds = {
-            jump: new Audio(), // 예: new Audio('sounds/jump.wav')
-            goal: new Audio(), // 예: new Audio('sounds/goal.wav')
-            gameOver: new Audio() // 예: new Audio('sounds/gameover.wav')
-        };
-        // 실제 사운드 파일이 없으므로, 경로 주석 처리
-        // sounds.jump.src = 'path/to/jump.wav';
-        // sounds.goal.src = 'path/to/goal.wav';
-        // sounds.gameOver.src = 'path/to/gameOver.wav';
-
-        let currentStageIndex = 0, currentLevelIndex = 0;
-        let activePlatforms = [], currentGoal = {}, currentSpawn = {};
-        let victoryJumps = 0, victoryTimer = 0;
-
-        const gravity = 0.8;
-        const player = {
-            width: 40, height: 40, color: 'red', speed: 5, dy: 0, jumpPower: -16, onGround: false,
-            x: 0, y: 0,
-        };
-
-        const stages = [
-            { name: "Stage 1", levels: [
-                { spawn: { x: 100, y: 450 }, goal: { x: 700, y: 100 }, platforms: [
-                    { x: 0, y: 550, width: 250, height: 50, type: 'normal' }, { x: 350, y: 450, width: 150, height: 20, type: 'normal' },
-                    { x: 550, y: 350, width: 150, height: 20, type: 'normal' }, { x: 650, y: 150, width: 100, height: 20, type: 'normal' } ]},
-                { spawn: { x: 50, y: 500 }, goal: { x: 700, y: 100 }, platforms: [
-                    { x: 0, y: 550, width: 100, height: 50, type: 'normal' }, { x: 200, y: 480, width: 100, height: 20, type: 'disappearing', timer: 60 },
-                    { x: 400, y: 400, width: 100, height: 20, type: 'disappearing', timer: 60 }, { x: 550, y: 300, width: 100, height: 20, type: 'normal' },
-                    { x: 650, y: 150, width: 100, height: 20, type: 'normal' } ]},
-                { spawn: { x: 50, y: 500 }, goal: { x: 400, y: 100 }, platforms: [
-                    { x: 0, y: 550, width: 800, height: 50, type: 'disappearing', timer: 120 }, { x: 100, y: 400, width: 100, height: 20, type: 'normal' },
-                    { x: 250, y: 300, width: 100, height: 20, type: 'normal' }, { x: 400, y: 200, width: 100, height: 20, type: 'normal' } ]}
-            ]},
-            { name: "Stage 2", levels: [ /* 튜토리얼 맵으로 활용 가능 */
-                { spawn: { x: 50, y: 500 }, goal: { x: 700, y: 500 }, platforms: [
-                    { x: 0, y: 550, width: 800, height: 50, type: 'normal' } ]}
-            ]}
-        ];
-
-        function loadLevel(stageIdx, levelIdx) {
-            const level = stages[stageIdx].levels[levelIdx];
-            currentSpawn = level.spawn;
-            currentGoal = { ...level.goal, width: 50, height: 50, color: 'gold' };
-            player.x = currentSpawn.x; player.y = currentSpawn.y; player.dy = 0;
-            activePlatforms = JSON.parse(JSON.stringify(level.platforms));
-            currentGameState = GameState.PLAYING;
-        }
-
-        function startGame(stageIdx) {
-            currentStageIndex = stageIdx;
-            currentLevelIndex = 0;
-            menu.style.display = 'none';
-            canvas.style.display = 'block';
-            loadLevel(currentStageIndex, currentLevelIndex);
-        }
-
-        const keys = { a: false, d: false, w: false };
-        window.addEventListener('keydown', e => {
-            if (e.key === 'a' || e.key === 'A') keys.a = true;
-            if (e.key === 'd' || e.key === 'D') keys.d = true;
-            if (e.key === 'w' || e.key === 'W' && currentGameState === GameState.PLAYING && player.onGround) {
-                player.dy = player.jumpPower;
-                player.onGround = false;
-                sounds.jump.play().catch(()=>{});
-            }
-        });
-        window.addEventListener('keyup', e => {
-            if (e.key === 'a' || e.key === 'A') keys.a = false;
-            if (e.key === 'd' || e.key === 'D') keys.d = false;
-        });
-
-        function updatePlaying() {
-            if (keys.a) player.x -= player.speed;
-            if (keys.d) player.x += player.speed;
-
-            player.dy += gravity;
-            player.y += player.dy;
-            player.onGround = false;
-
-            activePlatforms.forEach((p, i) => {
-                if (p.type === 'disappearing' && p.isTouched) {
-                    p.timer--; p.color = 'orange';
-                    if (p.timer <= 0) activePlatforms.splice(i, 1);
-                }
-                if (player.x < p.x + p.width && player.x + player.width > p.x && player.y < p.y + p.height && player.y + player.height > p.y) {
-                    if (player.dy > 0 && (player.y + player.height - player.dy) <= p.y) {
-                        player.y = p.y - player.height; player.dy = 0; player.onGround = true;
-                        if (p.type === 'disappearing') p.isTouched = true;
-                    }
-                }
-            });
-
-            if (player.y > canvas.height) {
-                sounds.gameOver.play().catch(()=>{});
-                currentGameState = GameState.GAME_OVER;
-            }
-            if (player.x < 0) player.x = 0;
-            if (player.x + player.width > canvas.width) player.x = canvas.width - player.width;
-
-            if (player.x < currentGoal.x + currentGoal.width && player.x + player.width > currentGoal.x && player.y < currentGoal.y + currentGoal.height && player.y + player.height > currentGoal.y) {
-                sounds.goal.play().catch(()=>{});
-                currentGameState = GameState.LEVEL_CLEAR;
-                victoryJumps = 0;
-                victoryTimer = 0;
-            }
-        }
-
-        function updateLevelClear() {
-            victoryTimer++;
-            if (victoryJumps < 3) {
-                if (player.onGround) {
-                    player.dy = player.jumpPower / 1.5; // 살짝 점프
-                    player.onGround = false;
-                    victoryJumps++;
-                }
-                player.dy += gravity;
-                player.y += player.dy;
-                if (player.y + player.height > currentGoal.y + currentGoal.height) {
-                    player.y = currentGoal.y + currentGoal.height - player.height;
-                    player.dy = 0; player.onGround = true;
-                }
-            } else if (victoryTimer > 120) { // 2초 후 다음 레벨로
-                currentLevelIndex++;
-                if (currentLevelIndex >= stages[currentStageIndex].levels.length) {
-                    currentStageIndex++; currentLevelIndex = 0;
-                    if (currentStageIndex >= stages.length) {
-                        alert("모든 스테이지 클리어! 축하합니다!");
-                        currentGameState = GameState.MENU;
-                        menu.style.display = 'flex';
-                        canvas.style.display = 'none';
-                        return;
-                    }
-                }
-                loadLevel(currentStageIndex, currentLevelIndex);
-            }
-        }
-
-        function drawPlaying() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            activePlatforms.forEach(p => {
-                ctx.fillStyle = p.color || (p.type === 'normal' ? 'brown' : 'purple');
-                if (p.type === 'normal' && p.height > 40) ctx.fillStyle = 'green';
-                ctx.fillRect(p.x, p.y, p.width, p.height);
-            });
-            ctx.fillStyle = currentGoal.color; ctx.fillRect(currentGoal.x, currentGoal.y, currentGoal.width, currentGoal.height);
-            ctx.fillStyle = player.color; ctx.fillRect(player.x, player.y, player.width, player.height);
-            ctx.fillStyle = 'black'; ctx.font = '20px Arial';
-            ctx.fillText(`Stage ${currentStageIndex + 1} - Level ${currentLevelIndex + 1}`, 10, 25);
-        }
-        
-        function drawGameOver() {
-            ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = "white";
-            ctx.font = "60px Arial";
-            ctx.textAlign = "center";
-            ctx.fillText("다시 시작", canvas.width / 2, canvas.height / 2);
-        }
-
-        function gameLoop() {
-            if (currentGameState === GameState.PLAYING) updatePlaying();
-            else if (currentGameState === GameState.LEVEL_CLEAR) updateLevelClear();
-            
-            if (currentGameState !== GameState.MENU) {
-                drawPlaying();
-                if (currentGameState === GameState.GAME_OVER) drawGameOver();
-            }
-            requestAnimationFrame(gameLoop);
-        }
-
-        function init() {
-            stages.forEach((stage, index) => {
-                const button = document.createElement('button');
-                button.innerText = stage.name;
-                button.onclick = () => startGame(index);
-                stageSelect.appendChild(button);
-            });
-            
-            canvas.addEventListener('click', function(e) {
-                if (currentGameState === GameState.GAME_OVER) {
-                    loadLevel(currentStageIndex, currentLevelIndex);
-                }
-            });
-
-            gameLoop();
-        }
-
-        init();
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
