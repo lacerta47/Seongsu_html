@@ -1,123 +1,247 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>성수고등학교 바이브코딩</title>
+    <title>점프 점프!</title>
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f7f6;
-            color: #333;
-            margin: 0;
-            padding: 2rem;
+            display: flex; justify-content: center; align-items: center;
+            height: 100vh; margin: 0; background-color: #333;
         }
-        header {
-            text-align: center;
-            margin-bottom: 3rem;
+        #game-container {
+            position: relative;
         }
-        h1 {
-            font-size: 2.5rem;
-            color: #2c3e50;
+        #menu {
+            position: absolute; top: 0; left: 0;
+            width: 800px; height: 600px;
+            background: rgba(0, 0, 0, 0.8); color: white;
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            text-align: center; z-index: 10;
         }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-            gap: 1.5rem;
+        #menu h1 { font-size: 70px; margin-bottom: 20px; color: #ffdd00; }
+        #menu button {
+            font-size: 24px; padding: 12px 25px; margin: 10px;
+            cursor: pointer; background-color: #ffaa00; color: #fff;
+            border: none; border-radius: 5px; transition: background-color 0.3s;
         }
-        .button-card {
-            background-color: #ffffff;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            transition: transform 0.2s, box-shadow 0.2s;
-            text-decoration: none;
-            color: #2c3e50;
-            font-weight: 600;
-            font-size: 1.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100px;
-        }
-        .button-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-            color: #3498db;
-        }
-        footer {
-            text-align: center;
-            margin-top: 4rem;
-            padding-top: 2rem;
-            border-top: 1px solid #e0e0e0;
-            color: #777;
+        #menu button:hover { background-color: #ffc340; }
+        #how-to-play { margin-top: 30px; font-size: 18px; }
+        canvas {
+            border: 2px solid black; background-color: #add8e6;
+            display: none; /* Initially hidden */
         }
     </style>
 </head>
 <body>
+    <div id="game-container">
+        <div id="menu">
+            <h1>점프 점프!</h1>
+            <div id="stage-select"></div>
+            <div id="how-to-play">
+                <h2>- 조작 방법 -</h2>
+                <p>W: 점프 / A: 왼쪽 / D: 오른쪽</p>
+            </div>
+        </div>
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
+    </div>
 
-    <header>
-        <h1>바이브코딩 작품</h1>
-        <p>아래 번호를 누르면 해당 프로젝트를 볼 수 있습니다.</p>
-    </header>
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const menu = document.getElementById('menu');
+        const stageSelect = document.getElementById('stage-select');
 
-    <main class="container">
-        <a href="./1/index.html" class="button-card">test_팩맨</a>
-        <a href="./2/index.html" class="button-card">2</a>
-        <a href="./3/index.html" class="button-card">3</a>
-        <a href="./4/index.html" class="button-card">4</a>
-        <a href="./5/index.html" class="button-card">5</a>
-        <a href="./6/index.html" class="button-card">6</a>
-        <a href="./7/index.html" class="button-card">7</a>
-        <a href="./8/index.html" class="button-card">8</a>
-        <a href="./9/index.html" class="button-card">9</a>
-        <a href="./10/index.html" class="button-card">10</a>
-        <a href="./11/index.html" class="button-card">11</a>
-        <a href="./12/index.html" class="button-card">12</a>
-        <a href="./13/index.html" class="button-card">13</a>
-        <a href="./14/index.html" class="button-card">14</a>
-        <a href="./15/index.html" class="button-card">15</a>
-        <a href="./16/index.html" class="button-card">16</a>
-        <a href="./17/index.html" class="button-card">17</a>
-        <a href="./18/index.html" class="button-card">18</a>
-        <a href="./19/index.html" class="button-card">19</a>
-        <a href="./20/index.html" class="button-card">20</a>
-        <a href="./21/index.html" class="button-card">21</a>
-        <a href="./22/index.html" class="button-card">22</a>
-        <a href="./23/index.html" class="button-card">23</a>
-        <a href="./24/index.html" class="button-card">24</a>
-        <a href="./25/index.html" class="button-card">25</a>
-        <a href="./26/index.html" class="button-card">26</a>
-        <a href="./27/index.html" class="button-card">27</a>
-        <a href="./28/index.html" class="button-card">28</a>
-        <a href="./29/index.html" class="button-card">29</a>
-        <a href="./30/index.html" class="button-card">30</a>
-        <a href="./31/index.html" class="button-card">31</a>
-        <a href="./32/index.html" class="button-card">32</a>
-        <a href="./33/index.html" class="button-card">33</a>
-        <a href="./34/index.html" class="button-card">34</a>
-        <a href="./35/index.html" class="button-card">35</a>
-        <a href="./36/index.html" class="button-card">36</a>
-        <a href="./37/index.html" class="button-card">37</a>
-        <a href="./38/index.html" class="button-card">38</a>
-        <a href="./39/index.html" class="button-card">39</a>
-        <a href="./40/index.html" class="button-card">40</a>
-        <a href="./41/index.html" class="button-card">41</a>
-        <a href="./42/index.html" class="button-card">42</a>
-        <a href="./43/index.html" class="button-card">43</a>
-        <a href="./44/index.html" class="button-card">44</a>
-        <a href="./45/index.html" class="button-card">45</a>
-        <a href="./46/index.html" class="button-card">46</a>
-        <a href="./47/index.html" class="button-card">47</a>
-        <a href="./48/index.html" class="button-card">48</a>
-        <a href="./49/index.html" class="button-card">49</a>
-        <a href="./50/index.html" class="button-card">50</a>
-    </main>
+        const GameState = { MENU: 0, PLAYING: 1, LEVEL_CLEAR: 2, GAME_OVER: 3 };
+        let currentGameState = GameState.MENU;
 
-    <footer>
-        <p>&copy; 2025 Vibe Coding. All rights reserved.</p>
-    </footer>
+        const sounds = {
+            jump: new Audio(), // 예: new Audio('sounds/jump.wav')
+            goal: new Audio(), // 예: new Audio('sounds/goal.wav')
+            gameOver: new Audio() // 예: new Audio('sounds/gameover.wav')
+        };
+        // 실제 사운드 파일이 없으므로, 경로 주석 처리
+        // sounds.jump.src = 'path/to/jump.wav';
+        // sounds.goal.src = 'path/to/goal.wav';
+        // sounds.gameOver.src = 'path/to/gameOver.wav';
 
+        let currentStageIndex = 0, currentLevelIndex = 0;
+        let activePlatforms = [], currentGoal = {}, currentSpawn = {};
+        let victoryJumps = 0, victoryTimer = 0;
+
+        const gravity = 0.8;
+        const player = {
+            width: 40, height: 40, color: 'red', speed: 5, dy: 0, jumpPower: -16, onGround: false,
+            x: 0, y: 0,
+        };
+
+        const stages = [
+            { name: "Stage 1", levels: [
+                { spawn: { x: 100, y: 450 }, goal: { x: 700, y: 100 }, platforms: [
+                    { x: 0, y: 550, width: 250, height: 50, type: 'normal' }, { x: 350, y: 450, width: 150, height: 20, type: 'normal' },
+                    { x: 550, y: 350, width: 150, height: 20, type: 'normal' }, { x: 650, y: 150, width: 100, height: 20, type: 'normal' } ]},
+                { spawn: { x: 50, y: 500 }, goal: { x: 700, y: 100 }, platforms: [
+                    { x: 0, y: 550, width: 100, height: 50, type: 'normal' }, { x: 200, y: 480, width: 100, height: 20, type: 'disappearing', timer: 60 },
+                    { x: 400, y: 400, width: 100, height: 20, type: 'disappearing', timer: 60 }, { x: 550, y: 300, width: 100, height: 20, type: 'normal' },
+                    { x: 650, y: 150, width: 100, height: 20, type: 'normal' } ]},
+                { spawn: { x: 50, y: 500 }, goal: { x: 400, y: 100 }, platforms: [
+                    { x: 0, y: 550, width: 800, height: 50, type: 'disappearing', timer: 120 }, { x: 100, y: 400, width: 100, height: 20, type: 'normal' },
+                    { x: 250, y: 300, width: 100, height: 20, type: 'normal' }, { x: 400, y: 200, width: 100, height: 20, type: 'normal' } ]}
+            ]},
+            { name: "Stage 2", levels: [ /* 튜토리얼 맵으로 활용 가능 */
+                { spawn: { x: 50, y: 500 }, goal: { x: 700, y: 500 }, platforms: [
+                    { x: 0, y: 550, width: 800, height: 50, type: 'normal' } ]}
+            ]}
+        ];
+
+        function loadLevel(stageIdx, levelIdx) {
+            const level = stages[stageIdx].levels[levelIdx];
+            currentSpawn = level.spawn;
+            currentGoal = { ...level.goal, width: 50, height: 50, color: 'gold' };
+            player.x = currentSpawn.x; player.y = currentSpawn.y; player.dy = 0;
+            activePlatforms = JSON.parse(JSON.stringify(level.platforms));
+            currentGameState = GameState.PLAYING;
+        }
+
+        function startGame(stageIdx) {
+            currentStageIndex = stageIdx;
+            currentLevelIndex = 0;
+            menu.style.display = 'none';
+            canvas.style.display = 'block';
+            loadLevel(currentStageIndex, currentLevelIndex);
+        }
+
+        const keys = { a: false, d: false, w: false };
+        window.addEventListener('keydown', e => {
+            if (e.key === 'a' || e.key === 'A') keys.a = true;
+            if (e.key === 'd' || e.key === 'D') keys.d = true;
+            if (e.key === 'w' || e.key === 'W' && currentGameState === GameState.PLAYING && player.onGround) {
+                player.dy = player.jumpPower;
+                player.onGround = false;
+                sounds.jump.play().catch(()=>{});
+            }
+        });
+        window.addEventListener('keyup', e => {
+            if (e.key === 'a' || e.key === 'A') keys.a = false;
+            if (e.key === 'd' || e.key === 'D') keys.d = false;
+        });
+
+        function updatePlaying() {
+            if (keys.a) player.x -= player.speed;
+            if (keys.d) player.x += player.speed;
+
+            player.dy += gravity;
+            player.y += player.dy;
+            player.onGround = false;
+
+            activePlatforms.forEach((p, i) => {
+                if (p.type === 'disappearing' && p.isTouched) {
+                    p.timer--; p.color = 'orange';
+                    if (p.timer <= 0) activePlatforms.splice(i, 1);
+                }
+                if (player.x < p.x + p.width && player.x + player.width > p.x && player.y < p.y + p.height && player.y + player.height > p.y) {
+                    if (player.dy > 0 && (player.y + player.height - player.dy) <= p.y) {
+                        player.y = p.y - player.height; player.dy = 0; player.onGround = true;
+                        if (p.type === 'disappearing') p.isTouched = true;
+                    }
+                }
+            });
+
+            if (player.y > canvas.height) {
+                sounds.gameOver.play().catch(()=>{});
+                currentGameState = GameState.GAME_OVER;
+            }
+            if (player.x < 0) player.x = 0;
+            if (player.x + player.width > canvas.width) player.x = canvas.width - player.width;
+
+            if (player.x < currentGoal.x + currentGoal.width && player.x + player.width > currentGoal.x && player.y < currentGoal.y + currentGoal.height && player.y + player.height > currentGoal.y) {
+                sounds.goal.play().catch(()=>{});
+                currentGameState = GameState.LEVEL_CLEAR;
+                victoryJumps = 0;
+                victoryTimer = 0;
+            }
+        }
+
+        function updateLevelClear() {
+            victoryTimer++;
+            if (victoryJumps < 3) {
+                if (player.onGround) {
+                    player.dy = player.jumpPower / 1.5; // 살짝 점프
+                    player.onGround = false;
+                    victoryJumps++;
+                }
+                player.dy += gravity;
+                player.y += player.dy;
+                if (player.y + player.height > currentGoal.y + currentGoal.height) {
+                    player.y = currentGoal.y + currentGoal.height - player.height;
+                    player.dy = 0; player.onGround = true;
+                }
+            } else if (victoryTimer > 120) { // 2초 후 다음 레벨로
+                currentLevelIndex++;
+                if (currentLevelIndex >= stages[currentStageIndex].levels.length) {
+                    currentStageIndex++; currentLevelIndex = 0;
+                    if (currentStageIndex >= stages.length) {
+                        alert("모든 스테이지 클리어! 축하합니다!");
+                        currentGameState = GameState.MENU;
+                        menu.style.display = 'flex';
+                        canvas.style.display = 'none';
+                        return;
+                    }
+                }
+                loadLevel(currentStageIndex, currentLevelIndex);
+            }
+        }
+
+        function drawPlaying() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            activePlatforms.forEach(p => {
+                ctx.fillStyle = p.color || (p.type === 'normal' ? 'brown' : 'purple');
+                if (p.type === 'normal' && p.height > 40) ctx.fillStyle = 'green';
+                ctx.fillRect(p.x, p.y, p.width, p.height);
+            });
+            ctx.fillStyle = currentGoal.color; ctx.fillRect(currentGoal.x, currentGoal.y, currentGoal.width, currentGoal.height);
+            ctx.fillStyle = player.color; ctx.fillRect(player.x, player.y, player.width, player.height);
+            ctx.fillStyle = 'black'; ctx.font = '20px Arial';
+            ctx.fillText(`Stage ${currentStageIndex + 1} - Level ${currentLevelIndex + 1}`, 10, 25);
+        }
+        
+        function drawGameOver() {
+            ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "white";
+            ctx.font = "60px Arial";
+            ctx.textAlign = "center";
+            ctx.fillText("다시 시작", canvas.width / 2, canvas.height / 2);
+        }
+
+        function gameLoop() {
+            if (currentGameState === GameState.PLAYING) updatePlaying();
+            else if (currentGameState === GameState.LEVEL_CLEAR) updateLevelClear();
+            
+            if (currentGameState !== GameState.MENU) {
+                drawPlaying();
+                if (currentGameState === GameState.GAME_OVER) drawGameOver();
+            }
+            requestAnimationFrame(gameLoop);
+        }
+
+        function init() {
+            stages.forEach((stage, index) => {
+                const button = document.createElement('button');
+                button.innerText = stage.name;
+                button.onclick = () => startGame(index);
+                stageSelect.appendChild(button);
+            });
+            
+            canvas.addEventListener('click', function(e) {
+                if (currentGameState === GameState.GAME_OVER) {
+                    loadLevel(currentStageIndex, currentLevelIndex);
+                }
+            });
+
+            gameLoop();
+        }
+
+        init();
+    </script>
 </body>
 </html>
