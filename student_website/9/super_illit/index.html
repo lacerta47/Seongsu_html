@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Super ILLIT</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- 시작 화면 -->
+    <div id="start-screen">
+        <button id="start-button">시작하기</button>
+    </div>
+
+    <!-- 메인 화면 -->
+    <div id="main-screen" style="display: none;">
+        <h1>SUPER ILLIT</h1>
+        <div id="button-container">
+            <!-- 버튼들은 script.js에서 동적으로 생성됩니다 -->
+        </div>
+    </div>
+
+    <!-- 사진 크게 보기 모달 -->
+    <div id="photo-modal" style="display: none;">
+        <span class="close-button">&times;</span>
+        <img class="modal-content" id="modal-image">
+    </div>
+
+    <!-- 효과음 -->
+    <audio id="click-sound" src="https://www.chosic.com/wp-content/uploads/2022/05/chosic.com_button-press.mp3"></audio>
+
+    <script src="script.js"></script>
+</body>
+</html>

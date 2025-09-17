@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>star Ar (v6)</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #00001a;
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+        }
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 2;
+            cursor: pointer;
+        }
+        #loading-screen h1 {
+            font-size: 4em;
+            margin: 0;
+            letter-spacing: 0.1em;
+        }
+        #loading-screen p {
+            font-size: 1.2em;
+            margin-top: 20px;
+        }
+        #bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            z-index: 1;
+        }
+    </style>
+</head>
+<body>
+    <div id="loading-screen">
+        <h1>star Ar</h1>
+        <p>화면을 클릭하면 시작합니다...</p>
+    </div>
+    <canvas id="bg"></canvas>
+
+    <!-- 외부 라이브러리 로드 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/controls/OrbitControls.js"></script>
+
+    <!-- 우리 애플리케이션 스크립트 로드 -->
+    <script src="script.js"></script>
+</body>
+</html>

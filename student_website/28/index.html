@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>다이어트 게임 v5</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f0f8ff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .screen {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        #start-screen, #game-over-screen, #success-screen {
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+        }
+        #countdown-screen {
+            font-size: 10em;
+            color: #333;
+            display: none;
+        }
+        .button {
+            padding: 15px 30px;
+            font-size: 1.5em;
+            cursor: pointer;
+            border: 2px solid white;
+            border-radius: 10px;
+            background-color: #4CAF50;
+            color: white;
+            margin: 10px;
+        }
+        .button:hover {
+            background-color: #45a049;
+        }
+        #game-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: none;
+            border-bottom: 2px solid #333;
+            box-sizing: border-box;
+        }
+        #info-container { /* New */
+            position: absolute;
+            top: 10px;
+            width: 98%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 1%;
+            color: #333;
+            font-size: 1.2em;
+            font-weight: bold;
+            z-index: 10;
+        }
+        #player {
+            position: absolute;
+            bottom: 0;
+            left: 15%; /* Changed */
+            width: auto; /* Changed */
+            height: auto; /* Changed */
+            background-color: transparent; /* Changed */
+            font-size: 35px; /* New */
+            line-height: 1; /* New */
+            transition: font-size 0.2s; /* Changed: removed transform from transition */
+            transform: scaleX(-1); /* New: Flipped from start */
+        }
+        .jump {
+            animation: jump 0.6s ease;
+        }
+        @keyframes jump {
+            0% { bottom: 0; }
+            50% { bottom: 150px; }
+            100% { bottom: 0; }
+        }
+        .obstacle {
+            position: absolute;
+            bottom: 0;
+            width: 40px;
+            height: 40px;
+            background-color: transparent;
+            font-size: 35px;
+            text-align: center;
+            /* animation: moveLeft 3s linear; This will be set dynamically */
+        }
+        @keyframes moveLeft {
+            from { right: -50px; }
+            to { right: 100%; }
+        }
+        h1 {
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+        /* .player-flipped { transform: scaleX(-1); } */ /* Removed */
+    </style>
+</head>
+<body>
+
+    <!-- 시작 화면 -->
+    <div id="start-screen" class="screen">
+        <h1>다이어트 게임 v5</h1>
+        <div id="start-btn" class="button">게임 시작</div>
+        <div class="button" style="background-color: #aaa;">캐릭터 선택 (준비중)</div>
+    </div>
+
+    <!-- 카운트다운 화면 -->
+    <div id="countdown-screen" class="screen">
+        <span id="countdown">3</span>
+    </div>
+
+    <!-- 게임 화면 -->
+    <div id="game-container">
+        <div id="info-container"> <!-- New -->
+            <div id="score">점수: 0</div>
+            <div id="size-display">체중: 50 KG</div> <!-- Changed unit -->
+        </div>
+        <div id="player"></div>
+    </div>
+
+    <!-- 게임 오버 화면 -->
+    <div id="game-over-screen" class="screen" style="display: none;">
+        <h1>게임 오버</h1>
+        <div id="restart-btn" class="button">다시 시작</div>
+    </div>
+
+    <!-- 성공 화면 -->
+    <div id="success-screen" class="screen" style="display: none;">
+        <h1>다이어트 성공!</h1>
+        <div id="success-restart-btn" class="button">다시 시작</div> <!-- New -->
+    </div>
+
+    <script>
+        // 화면 요소 가져오기
+        const startScreen = document.getElementById('start-screen');
+        const countdownScreen = document.getElementById('countdown-screen');
+        const countdownEl = document.getElementById('countdown');
+        const gameContainer = document.getElementById('game-container');
+        const gameOverScreen = document.getElementById('game-over-screen');
+        const successScreen = document.getElementById('success-screen');
+        const player = document.getElementById('player');
+        const scoreEl = document.getElementById('score');
+        const sizeDisplayEl = document.getElementById('size-display');
+        
+        // 버튼 요소 가져오기
+        const startBtn = document.getElementById('start-btn');
+        const restartBtn = document.getElementById('restart-btn');
+        const successRestartBtn = document.getElementById('success-restart-btn');
+
+        // 게임 변수
+        let playerSize = 50;
+        const minSize = 10;
+        const maxSize = 200;
+        let gameInterval;
+        let obstacleCreationTimeoutId;
+        let speedIncreaseIntervalId;
+        let isJumping = false;
+        let score = 0;
+        let gameSpeed = 3000;
+        let obstacleCreationBaseInterval = 1500;
+
+        // 음식 데이터 (이모지와 증가량)
+        const foods = [
+            { emoji: '🍕', gain: 10 },
+            { emoji: '🍔', gain: 8 },
+            { emoji: '🍟', gain: 7 },
+            { emoji: '🍩', gain: 6 },
+            { emoji: '🍰', gain: 9 },
+            { emoji: '🍗', gain: 7 },
+            { emoji: '🌭', gain: 5 }
+        ];
+
+        // 게임 시작 처리
+        startBtn.addEventListener('click', () => {
+            startScreen.style.display = 'none';
+            countdownScreen.style.display = 'flex';
+            let count = 3;
+            countdownEl.textContent = count;
+            
+            const countdownInterval = setInterval(() => {
+                count--;
+                if (count > 0) {
+                    countdownEl.textContent = count;
+                } else {
+                    clearInterval(countdownInterval);
+                    countdownScreen.style.display = 'none';
+                    startGame();
+                }
+            }, 1000);
+        });
+
+        // 다시 시작 처리 (게임 오버)
+        restartBtn.addEventListener('click', () => {
+            gameOverScreen.style.display = 'none';
+            // 모든 장애물 제거
+            document.querySelectorAll('.obstacle').forEach(o => o.remove());
+            startScreen.style.display = 'flex';
+            // Reset score and size display for next game
+            scoreEl.textContent = `점수: 0`;
+            sizeDisplayEl.textContent = `체중: 50 KG`;
+            // Clear any running intervals/timeouts
+            clearInterval(gameInterval);
+            clearTimeout(obstacleCreationTimeoutId);
+            clearInterval(speedIncreaseIntervalId);
+            window.removeEventListener('click', handleJump);
+            window.removeEventListener('touchstart', handleJump);
+            window.removeEventListener('keydown', handleKeyboardJump);
+        });
+
+        // 다시 시작 처리 (성공)
+        successRestartBtn.addEventListener('click', () => {
+            successScreen.style.display = 'none';
+            // 모든 장애물 제거
+            document.querySelectorAll('.obstacle').forEach(o => o.remove());
+            startScreen.style.display = 'flex';
+            // Reset score and size display for next game
+            scoreEl.textContent = `점수: 0`;
+            sizeDisplayEl.textContent = `체중: 50 KG`;
+            // Clear any running intervals/timeouts
+            clearInterval(gameInterval);
+            clearTimeout(obstacleCreationTimeoutId);
+            clearInterval(speedIncreaseIntervalId);
+            window.removeEventListener('click', handleJump);
+            window.removeEventListener('touchstart', handleJump);
+            window.removeEventListener('keydown', handleKeyboardJump);
+        });
+
+        function startGame() {
+            gameContainer.style.display = 'block';
+            playerSize = 50;
+            score = 0;
+            gameSpeed = 3000;
+            obstacleCreationBaseInterval = 1500;
+            updatePlayerSize();
+            scoreEl.textContent = `점수: ${score}`;
+            isJumping = false;
+            player.textContent = '🏃';
+            // player.classList.remove('player-flipped'); // Removed
+
+            // 점프 이벤트 (화면 아무데나 클릭 또는 터치)
+            window.addEventListener('click', handleJump);
+            window.addEventListener('touchstart', handleJump);
+            window.addEventListener('keydown', handleKeyboardJump);
+
+            // 장애물 생성 시작 (랜덤 간격)
+            randomObstacleCreator();
+            
+            // 게임 속도 증가 시작
+            speedIncreaseIntervalId = setInterval(increaseSpeed, 5000);
+
+            // 게임 루프 시작
+            gameInterval = setInterval(gameLoop, 50);
+        }
+
+        function handleJump(event) {
+            event.preventDefault();
+            if (!isJumping) {
+                isJumping = true;
+                player.classList.add('jump');
+                // player.classList.toggle('player-flipped'); // Removed
+                
+                // 점프하면 작아짐
+                playerSize = Math.max(minSize, playerSize - 1);
+                updatePlayerSize();
+
+                setTimeout(() => {
+                    isJumping = false;
+                    player.classList.remove('jump');
+                }, 600); // 점프 애니메이션 시간과 동일하게
+            }
+        }
+
+        function handleKeyboardJump(event) {
+            if (event.code === 'Space') {
+                handleJump(event);
+            }
+        }
+
+        function randomObstacleCreator() {
+            clearTimeout(obstacleCreationTimeoutId);
+            const numObstacles = Math.floor(Math.random() * 3) + 1; // 1 to 3 obstacles
+            let delay = 0;
+            for (let i = 0; i < numObstacles; i++) {
+                setTimeout(() => {
+                    createObstacle();
+                }, delay);
+                delay += 300; // Short delay between consecutive obstacles
+            }
+            const randomInterval = Math.random() * 1000 + obstacleCreationBaseInterval;
+            obstacleCreationTimeoutId = setTimeout(randomObstacleCreator, randomInterval);
+        }
+
+        function createObstacle() {
+            const obstacle = document.createElement('div');
+            obstacle.classList.add('obstacle');
+            const randomFood = foods[Math.floor(Math.random() * foods.length)]; // Select food object
+            obstacle.textContent = randomFood.emoji; // Use emoji from object
+            obstacle.dataset.gain = randomFood.gain; // Store gain value
+            obstacle.style.right = '-50px';
+            obstacle.style.animation = `moveLeft ${gameSpeed / 1000}s linear forwards`;
+            gameContainer.appendChild(obstacle);
+
+            // 화면 밖으로 나간 장애물 제거
+            setTimeout(() => {
+                obstacle.remove();
+            }, gameSpeed); // Obstacle removal time matches animation duration
+        }
+
+        function gameLoop() {
+            score++;
+            scoreEl.textContent = `점수: ${score}`;
+
+            // 성공 조건 확인
+            if (playerSize <= minSize) {
+                winGame();
+                return;
+            }
+
+            // 충돌 확인
+            const playerRect = player.getBoundingClientRect();
+            document.querySelectorAll('.obstacle').forEach(obstacle => {
+                const obstacleRect = obstacle.getBoundingClientRect();
+                if (
+                    playerRect.left < obstacleRect.left + obstacleRect.width &&
+                    playerRect.left + playerRect.width > obstacleRect.left &&
+                    playerRect.top < obstacleRect.top + obstacleRect.height &&
+                    playerRect.height + playerRect.top > obstacleRect.top
+                ) {
+                    // 충돌 시 커짐
+                    playerSize += parseInt(obstacle.dataset.gain); // Use stored gain value
+                    updatePlayerSize();
+                    obstacle.remove(); // 충돌한 장애물 제거
+                }
+            });
+
+            // 게임 오버 조건 확인
+            if (playerSize >= maxSize) {
+                endGame();
+            }
+        }
+
+        function updatePlayerSize() {
+            player.style.fontSize = `${playerSize}px`;
+            sizeDisplayEl.textContent = `체중: ${playerSize} KG`;
+        }
+
+        function increaseSpeed() {
+            if (gameSpeed > 1000) {
+                gameSpeed -= 100;
+            }
+            if (obstacleCreationBaseInterval > 500) {
+                obstacleCreationBaseInterval -= 50;
+            }
+        }
+
+        function endGame() {
+            clearInterval(gameInterval);
+            clearTimeout(obstacleCreationTimeoutId);
+            clearInterval(speedIncreaseIntervalId);
+            window.removeEventListener('click', handleJump);
+            window.removeEventListener('touchstart', handleJump);
+            window.removeEventListener('keydown', handleKeyboardJump);
+            gameContainer.style.display = 'none';
+            gameOverScreen.style.display = 'flex';
+        }
+
+        function winGame() {
+            clearInterval(gameInterval);
+            clearTimeout(obstacleCreationTimeoutId);
+            clearInterval(speedIncreaseIntervalId);
+            window.removeEventListener('click', handleJump);
+            window.removeEventListener('touchstart', handleJump);
+            window.removeEventListener('keydown', handleKeyboardJump);
+            gameContainer.style.display = 'none';
+            successScreen.style.display = 'flex';
+        }
+
+    </script>
+</body>
+</html>

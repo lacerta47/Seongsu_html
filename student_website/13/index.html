@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>날씨 알리미</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>날씨 알리미</h1>
+        <div id="city-input-container">
+            <input type="text" id="city-input" placeholder="도시를 입력하세요 (예: 서울)">
+            <button id="city-submit">확인</button>
+        </div>
+        <div id="weather-container" class="hidden">
+            <h2>오늘의 날씨</h2>
+            <p id="weather-info"></p>
+            <p id="current-precipitation-info"></p>
+            <h3>내일의 날씨</h3>
+            <p id="tomorrow-weather-info"></p>
+            <p id="tomorrow-precipitation-info"></p>
+        </div>
+        <div id="news-container" class="hidden">
+            <h2>주요 뉴스</h2>
+            <div id="news-loader" class="loader"></div>
+            <ul id="news-list"></ul>
+        </div>
+        <div id="schedule-container" class="hidden">
+            <h2>오늘의 일정</h2>
+            <textarea id="schedule-text" rows="5" placeholder="오늘의 일정을 여기에 입력하세요."></textarea>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

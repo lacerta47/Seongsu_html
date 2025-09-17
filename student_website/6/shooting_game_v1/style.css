@@ -1,0 +1,39 @@
+body {
+    background-color: #333;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+    font-family: sans-serif;
+}
+
+#gameContainer {
+    position: relative; /* 자식 요소의 위치 기준으로 사용 */
+}
+
+canvas {
+    background-color: #8BC34A; /* 초원 색깔 */
+    border: 2px solid #111;
+    display: block; /* 버튼과 겹치기 위해 block으로 설정 */
+}
+
+#restartButton {
+    position: absolute;
+    top: 60%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 15px 30px;
+    font-size: 24px;
+    color: white;
+    background-color: #4CAF50;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#restartButton:hover {
+    background-color: #45a049;
+}

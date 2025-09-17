@@ -1,0 +1,15 @@
+body {
+    font-family: sans-serif;
+}
+
+#main-screen {
+    transition: opacity 0.5s ease-in-out;
+}
+
+.form-range::-webkit-slider-thumb {
+    background: #0d6efd;
+}
+
+.form-range::-moz-range-thumb {
+    background: #0d6efd;
+}

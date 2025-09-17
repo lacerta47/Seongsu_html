@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>여자아이돌 이상형 월드컵</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="container">
+        <div id="start-screen">
+            <h1>여자아이돌 이상형 월드컵</h1>
+            <h2>라운드를 선택하세요</h2>
+            <button class="round-btn" data-round="4">4강으로 시작하기</button>
+        </div>
+
+        <div id="game-screen" class="hidden">
+            <h2 id="round-title"></h2>
+            <div id="match-container">
+                <div class="fighter">
+                    <img id="img-left" src="" alt="아이돌 이미지">
+                    <h3 id="name-left"></h3>
+                    <button id="btn-left">선택</button>
+                </div>
+                <div class="vs">VS</div>
+                <div class="fighter">
+                    <img id="img-right" src="" alt="아이돌 이미지">
+                    <h3 id="name-right"></h3>
+                    <button id="btn-right">선택</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="result-screen" class="hidden">
+            <h1>최종 이상형</h1>
+            <div class="winner">
+                <img id="winner-img" src="" alt="최종 우승 아이돌">
+                <h2 id="winner-name"></h2>
+            </div>
+            <button id="restart-btn">다시하기</button>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,34 @@
+body {
+    margin: 0;
+    overflow: hidden; /* 스크롤바 제거 */
+    font-family: sans-serif;
+}
+
+#bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+#ui {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 10;
+}
+
+button {
+    padding: 10px 15px;
+    background-color: #ffffff;
+    border: 1px solid #cccccc;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-right: 10px;
+}
+
+button:hover {
+    background-color: #f0f0f0;
+}
