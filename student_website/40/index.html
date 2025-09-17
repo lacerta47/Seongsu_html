@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>공 피하기</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="game-container">
+        <canvas id="game-canvas"></canvas>
+        <div id="ui-container">
+            <div id="stats">
+                <span>점수: <span id="score">0</span></span>
+                <span>시간: <span id="time">0</span>초</span>
+                <span>목숨: <span id="lives">3</span></span>
+            </div>
+            <div id="start-screen">
+                <h1>공 피하기</h1>
+                <button id="start-button">시작</button>
+            </div>
+            <div id="game-over-screen" class="hidden">
+                <h2>게임 종료</h2>
+                <p>최종 점수: <span id="final-score">0</span></p>
+                <button id="restart-button">다시 시작</button>
+            </div>
+        </div>
+        <div id="mobile-controls" class="hidden">
+            <button id="left-btn">◀</button>
+            <button id="right-btn">▶</button>
+        </div>
+    </div>
+
+    <audio id="collision-sound" src="sounds/collision.mp3"></audio>
+    <audio id="gameover-sound" src="sounds/gameover.mp3"></audio>
+    <audio id="levelup-sound" src="sounds/levelup.mp3"></audio>
+
+    <script src="script.js"></script>
+</body>
+</html>
