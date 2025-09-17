@@ -1,0 +1,213 @@
+
+/* 기본 스타일 */
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background-color: #1a1a1a;
+    color: #fff;
+    overflow: hidden; /* 스크롤바 제거 */
+}
+
+canvas {
+    display: block;
+}
+
+/* 오버레이 공통 스타일 (메뉴, 게임오버 등) */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: none; /* 기본적으로 숨김 */
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    z-index: 10;
+}
+
+.overlay.active {
+    display: flex; /* 활성화 시 보임 */
+}
+
+.menu-container {
+    background-color: rgba(40, 40, 40, 0.9);
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+}
+
+.menu-container h1 {
+    margin-top: 0;
+    font-size: 2.5em;
+    color: #00ffff;
+}
+
+.menu-button {
+    display: block;
+    width: 100%;
+    padding: 15px;
+    margin: 15px 0;
+    font-size: 1.2em;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.1s;
+}
+
+.menu-button:hover {
+    background-color: #0056b3;
+}
+
+.menu-button:active {
+    transform: scale(0.98);
+}
+
+#settings-icon {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 2em;
+    cursor: pointer;
+}
+
+/* 로딩 스피너 */
+.spinner {
+    border: 8px solid #f3f3f3;
+    border-top: 8px solid #3498db;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+
+/* 게임 화면 및 HUD */
+#game-screen {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    display: none; /* 초기에는 숨김 */
+}
+
+#gl-canvas {
+    width: 100%;
+    height: 100%;
+}
+
+#hud {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    color: white;
+    text-shadow: 1px 1px 2px black;
+    z-index: 5;
+}
+
+#hud > div {
+    margin-bottom: 10px;
+}
+
+#stamina-container {
+    display: flex;
+    align-items: center;
+}
+
+#stamina-bar {
+    width: 100px;
+    height: 15px;
+    background-color: #555;
+    border: 1px solid #fff;
+    margin-left: 10px;
+    border-radius: 3px;
+    background-image: linear-gradient(to right, #00ff00, #ffff00, #ff0000);
+    background-size: 100% 100%;
+}
+
+/* 미니맵 */
+#map-canvas {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 200px;
+    height: 200px;
+    background-color: rgba(0, 0, 0, 0.5);
+    border: 1px solid #fff;
+    z-index: 5;
+}
+
+/* 모바일 컨트롤 */
+#mobile-controls {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    width: calc(100% - 40px);
+    display: none; /* PC에서는 숨김 */
+    justify-content: space-between;
+    align-items: flex-end;
+    z-index: 5;
+    pointer-events: none; /* 자식 요소만 이벤트 받도록 */
+}
+
+#joystick-container {
+    width: 120px;
+    height: 120px;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    position: relative;
+    pointer-events: all;
+}
+
+#joystick {
+    width: 60px;
+    height: 60px;
+    background-color: rgba(255, 255, 255, 0.5);
+    border-radius: 50%;
+    position: absolute;
+    top: 30px;
+    left: 30px;
+}
+
+#run-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background-color: rgba(255, 82, 82, 0.5);
+    color: white;
+    font-size: 1.5em;
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: all;
+}
+
+/* 미디어 쿼리 - PC 환경에서는 모바일 컨트롤 숨김 */
+@media (min-width: 768px) {
+    #mobile-controls {
+        display: none !important;
+    }
+}
+
+/* 미디어 쿼리 - 모바일 환경 설정 */
+@media (max-width: 767px) {
+    #mobile-controls {
+        display: flex;
+    }
+    #map-canvas {
+        width: 120px;
+        height: 120px;
+    }
+    .menu-container h1 {
+        font-size: 2em;
+    }
+}

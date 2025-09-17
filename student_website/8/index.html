@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>3D 미로 탈출</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- 로딩 화면 -->
+    <div id="loading-screen" class="overlay active">
+        <div class="spinner"></div>
+        <p>로딩 중...</p>
+    </div>
+
+    <!-- 메뉴 화면 -->
+    <div id="menu-screen" class="overlay">
+        <div class="menu-container">
+            <h1>3D 미로 탈출</h1>
+            <button id="start-button" class="menu-button">게임 시작</button>
+            <button id="tutorial-button" class="menu-button">튜토리얼</button>
+            <div id="settings-icon" class="icon">⚙️</div>
+        </div>
+    </div>
+
+    <!-- 게임 오버 화면 -->
+    <div id="game-over-screen" class="overlay">
+        <div class="menu-container">
+            <h1>게임 오버</h1>
+            <p>시간이 초과되었습니다!</p>
+            <button id="restart-from-game-over-button" class="menu-button">다시 시작</button>
+        </div>
+    </div>
+
+    <!-- 게임 클리어 화면 -->
+    <div id="game-clear-screen" class="overlay">
+        <div class="menu-container">
+            <h1>탈출 성공!</h1>
+            <p>미로를 성공적으로 탈출했습니다!</p>
+            <button id="restart-from-game-clear-button" class="menu-button">새로운 게임</button>
+        </div>
+    </div>
+
+    <!-- 게임 화면 -->
+    <div id="game-screen">
+        <!-- 3D 렌더링을 위한 캔버스 -->
+        <canvas id="gl-canvas"></canvas>
+
+        <!-- HUD (Heads-Up Display) -->
+        <div id="hud">
+            <div id="timer">시간: 00:00</div>
+            <div id="stamina-container">
+                <span>체력</span>
+                <div id="stamina-bar"></div>
+            </div>
+            <div id="inventory">인벤토리: <span>비어있음</span></div>
+        </div>
+
+        <!-- 미니맵 -->
+        <canvas id="map-canvas"></canvas>
+
+        <!-- 모바일 컨트롤 -->
+        <div id="mobile-controls">
+            <div id="joystick-container">
+                <div id="joystick"></div>
+            </div>
+            <button id="run-button">Run</button>
+        </div>
+    </div>
+
+    <!-- Three.js 라이브러리 및 게임 스크립트 -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js"
+            }
+        }
+    </script>
+    <script type="module" src="main.js"></script>
+</body>
+</html>
