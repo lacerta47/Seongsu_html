@@ -7,41 +7,23 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="start-screen">
-        <h1>리듬 게임</h1>
-        <div class="instructions">
-            <h2>조작법 안내</h2>
-            <p>키보드의 S, D, F, J, K, L 키를 사용합니다.</p>
-            <h2>게임 방법</h2>
-            <p>내려오는 노트에 맞춰 정확한 타이밍에 키를 누르세요!</p>
-        </div>
-        <button id="start-button">게임 시작</button>
+    <h1>리듬 게임</h1>
+    <div id="score-board">
+        <p>점수: <span id="score">0</span></p>
+        <p>콤보: <span id="combo">0</span></p>
+    </div>
+    <button id="start-button">게임 시작</button>
+    <div id="game-container">
+        <div id="judgment-display"></div>
+        <div id="target-line"></div>
+        <div class="lane"><div class="key-hint">D</div></div>
+        <div class="lane"><div class="key-hint">F</div></div>
+        <div class="lane"><div class="key-hint">J</div></div>
+        <div class="lane"><div class="key-hint">K</div></div>
     </div>
 
-    <div id="game-container" class="hidden">
-        <div id="judgment-text"></div>
-        <div id="game-info">
-            <div>SCORE: <span id="score">0</span></div>
-            <div>COMBO: <span id="combo">0</span></div>
-        </div>
-        <div id="play-area">
-            <div class="lane" id="lane-s"><div class="receptor">S</div></div>
-            <div class="lane" id="lane-d"><div class="receptor">D</div></div>
-            <div class="lane" id="lane-f"><div class="receptor">F</div></div>
-            <div class="lane" id="lane-j"><div class="receptor">J</div></div>
-            <div class="lane" id="lane-k"><div class="receptor">K</div></div>
-            <div class="lane" id="lane-l"><div class="receptor">L</div></div>
-        </div>
-    </div>
+    <audio id="game-music" src="https://cdn.pixabay.com/download/audio/2022/01/18/audio_83c952b182.mp3" preload="auto"></audio>
 
     <script src="script.js"></script>
-
-    <div id="result-screen" class="hidden">
-        <h2>게임 결과</h2>
-        <p>최종 점수: <span id="final-score">0</span></p>
-        <p>최대 콤보: <span id="max-combo">0</span></p>
-        <p id="clear-status"></p>
-        <button id="restart-button">다시 시작</button>
-    </div>
 </body>
 </html>

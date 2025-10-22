@@ -1,0 +1,86 @@
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f0f2f5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+#container {
+    width: 800px;
+    max-width: 95%;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    padding: 20px;
+    text-align: center;
+}
+
+.hidden {
+    display: none;
+}
+
+h1, h2 {
+    color: #333;
+}
+
+.round-btn, #restart-btn, .fighter button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 10px;
+}
+
+.round-btn:hover, #restart-btn:hover, .fighter button:hover {
+    background-color: #0056b3;
+}
+
+#match-container {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.fighter {
+    width: 45%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+.fighter img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+.vs {
+    font-size: 24px;
+    font-weight: bold;
+    color: #dc3545;
+}
+
+.winner img {
+    width: 300px;
+    height: 300px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 5px solid #ffc107;
+    margin-top: 20px;
+}
+
+#winner-name {
+    color: #28a745;
+    margin-top: 10px;
+}

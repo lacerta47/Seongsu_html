@@ -3,33 +3,126 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Super ILLIT</title>
-    <link rel="stylesheet" href="style.css">
+    <title>아일릿 영상 앱</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f0f2f5;
+            color: #333;
+            text-align: center;
+        }
+        h1 {
+            color: #6a0dad; /* 보라색 계열 */
+            margin-bottom: 40px;
+            font-size: 2.5em;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+        .button-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 25px;
+            justify-content: center;
+            max-width: 900px;
+            padding: 20px;
+        }
+        .member-button {
+            background-color: #e0b0ff; /* 연한 보라색 */
+            color: white;
+            border: none;
+            padding: 20px 35px;
+            border-radius: 30px;
+            font-size: 1.8em;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            outline: none;
+            min-width: 150px;
+            text-align: center;
+        }
+        .member-button:hover {
+            background-color: #c080ff; /* 조금 더 진한 보라색 */
+            transform: translateY(-8px) scale(1.1); /* 말랑말랑 효과 */
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.3);
+        }
+        .member-button:active {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+        }
+    </style>
 </head>
 <body>
-
-    <!-- 시작 화면 -->
-    <div id="start-screen">
-        <button id="start-button">시작하기</button>
+    <h1>super ILIT</h1>
+    <div class="button-container">
+        <button class="member-button" id="wonheeBtn">원희</button>
+        <button class="member-button" id="mokaBtn">모카</button>
+        <button class="member-button" id="minjuBtn">민주</button>
+        <button class="member-button" id="irohaBtn">이로하</button>
+        <button class="member-button" id="yunahBtn">윤아</button>
     </div>
 
-    <!-- 메인 화면 -->
-    <div id="main-screen" style="display: none;">
-        <h1>SUPER ILLIT</h1>
-        <div id="button-container">
-            <!-- 버튼들은 script.js에서 동적으로 생성됩니다 -->
-        </div>
-    </div>
+    <script>
+        const videoLinks = {
+            wonhee: [
+                "https://www.youtube.com/watch?v=PtLSl14VEDg&list=RDPtLSl14VEDg&start_radio=1",
+                "https://www.youtube.com/watch?v=kvQby5gEQrU&list=RDkvQby5gEQrU&start_radio=1",
+                "https://www.youtube.com/watch?v=5xm55wjNNpM&list=RD5xm55wjNNpM&start_radio=1",
+                "https://www.youtube.com/watch?v=HKNC7IUGxuE&list=RDHKNC7IUGxuE&start_radio=1",
+                "https://www.youtube.com/watch?v=cnhel_I3UcI&list=RDcnhel_I3UcI&start_radio=1"
+            ],
+            moka: [
+                "https://www.youtube.com/watch?v=xO26WfiUUD0&list=RDxO26WfiUUD0&start_radio=1",
+                "https://www.youtube.com/watch?v=OQSV7Qnpt3U&list=RDOQSV7Qnpt3U&start_radio=1",
+                "https://www.youtube.com/watch?v=C1D3YYRqkAo&list=RDC1D3YYRqkAo&start_radio=1",
+                "https://www.youtube.com/watch?v=pUnkBylHykw&list=RDpUnkBylHykw&start_radio=1",
+                "https://www.youtube.com/watch?v=p4PUh9eusdQ&list=RDp4PUh9eusdQ&start_radio=1",
+                "https://www.youtube.com/watch?v=99qomqiyJa4&list=RD99omqiyJa4&start_radio=1"
+            ],
+            minju: [
+                "https://www.youtube.com/watch?v=TJLU2hED8Rs&list=RDTJLU2hED8Rs&start_radio=1",
+                "https://www.youtube.com/watch?v=BPgwsgcl1rU&list=RDBPgwsgcl1rU&start_radio=1",
+                "https://www.youtube.com/watch?v=GOZ2B93thX4&list=RDGOZ2B93thX4&start_radio=1",
+                "https://www.youtube.com/watch?v=6TfnQnSfq5A&list=RD6TfnQnSfq5A&start_radio=1",
+                "https://www.youtube.com/watch?v=qYJnSmdZb34&list=PLYuYsM-CAIONy5Cvh5MLrWG8PAZukgFan&index=12"
+            ],
+            iroha: [
+                "https://www.youtube.com/watch?v=HhU5an7tncQ&t=44s",
+                "https://www.youtube.com/watch?v=8U9Mcwfw22M&list=RD8U9Mcwfw22M&start_radio=1",
+                "https://www.youtube.com/watch?v=UYzL5EvYT2M&list=RDUYzL5EvYT2M&start_radio=1",
+                "https://www.youtube.com/watch?v=ikU2O6mObb0",
+                "https://www.youtube.com/watch?v=-PDxaSf3lys"
+            ],
+            yunah: [
+                "https://www.youtube.com/watch?v=Csx-Oe3Hj0w&list=RDCsx-Oe3Hj0w&start_radio=1",
+                "https://www.youtube.com/watch?v=CAqRGetyj6E&list=RDCAqRGetyj6E&start_radio=1",
+                "https://www.youtube.com/watch?v=m9dQ-IW42e8&list=RDm9dQ-IW42e8&start_radio=1",
+                "https://www.youtube.com/watch?v=PpfGQ0CbWiY&list=RDPpfGQ0CbWiY&start_radio=1",
+                "https://www.youtube.com/watch?v=9LFJddu-ohw"
+            ]
+        };
 
-    <!-- 사진 크게 보기 모달 -->
-    <div id="photo-modal" style="display: none;">
-        <span class="close-button">&times;</span>
-        <img class="modal-content" id="modal-image">
-    </div>
+        function openRandomVideo(member) {
+            const links = videoLinks[member];
+            if (links && links.length > 0) {
+                const randomIndex = Math.floor(Math.random() * links.length);
+                const randomLink = links[randomIndex];
+                window.open(randomLink, '_blank');
+            } else {
+                alert('아직 ' + member + ' 멤버의 영상 링크가 없어요!');
+            }
+        }
 
-    <!-- 효과음 -->
-    <audio id="click-sound" src="https://www.chosic.com/wp-content/uploads/2022/05/chosic.com_button-press.mp3"></audio>
-
-    <script src="script.js"></script>
+        document.getElementById('wonheeBtn').addEventListener('click', () => openRandomVideo('wonhee'));
+        document.getElementById('mokaBtn').addEventListener('click', () => openRandomVideo('moka'));
+        document.getElementById('minjuBtn').addEventListener('click', () => openRandomVideo('minju'));
+        document.getElementById('irohaBtn').addEventListener('click', () => openRandomVideo('iroha'));
+        document.getElementById('yunahBtn').addEventListener('click', () => openRandomVideo('yunah'));
+    </script>
 </body>
 </html>

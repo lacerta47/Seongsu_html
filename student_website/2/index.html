@@ -87,7 +87,7 @@
       const p = pipes[i];
       p.x -= PIPE_SPEED;
       if(!p.passed && p.x + PIPE_W < bird.x - bird.r){
-        p.passed = true; score++; scoreEl.textContent = score; beep(880,0.05,'square',0.06);
+        p.passed = true; if(running){score++;} scoreEl.textContent = score; beep(880,0.05,'square',0.06);
         if(score > best){ best = score; bestEl.textContent = best; localStorage.setItem('flappy_best', String(best)); }
       }
       if(p.x + PIPE_W < -10) pipes.splice(i,1);
@@ -154,7 +154,7 @@
 
   function flap(){ bird.vel = FLAP; running=true; beep(1000,0.04,'sine',0.06); }
 
-  window.addEventListener('keydown', e => { if(e.code==='Space'){e.preventDefault();flap();} if(e.key.toLowerCase()==='r'){reset();} if(e.key.toLowerCase()==='m'){toggleMute();} });
+  window.addEventListener('keydown', e => { if(e.code==='Space'){e.preventDefault();if(!running){reset();} flap();} if(e.key.toLowerCase()==='r'){reset();} if(e.key.toLowerCase()==='m'){toggleMute();} });
   window.addEventListener('mousedown', e => { if(!running && performance.now()-lastPipeTime>100){reset();} flap(); });
   window.addEventListener('touchstart', e => { e.preventDefault(); if(!running){reset();} flap(); }, {passive:false});
 

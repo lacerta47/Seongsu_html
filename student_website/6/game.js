@@ -37,7 +37,7 @@ function playSound(type) {
 }
 
 // --- 게임 변수 초기화 함수 ---
-let player, bullets, enemies, particles, gameOver, gameWon, score, time, enemySpawnRate;
+let player, bullets, enemies, particles, gameOver, gameWon, score, time, enemySpawnRate, stars, enemyBullets, powerUps;
 
 function init() {
     player = {
@@ -48,16 +48,29 @@ function init() {
         color: '#0095DD',
         speed: 5,
         hp: 10,
-        hitTimer: 0
+        hitTimer: 0,
+        shieldTimer: 0
     };
     bullets = [];
+    enemyBullets = [];
     enemies = [];
+    powerUps = [];
     particles = [];
     gameOver = false;
     gameWon = false;
     score = 0;
     time = 0;
     enemySpawnRate = 0.02;
+
+    stars = [];
+    for (let i = 0; i < 100; i++) {
+        stars.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            size: Math.random() * 1.5 + 0.5,
+            speed: Math.random() * 1 + 0.2
+        });
+    }
 
     restartButton.style.display = 'none';
 }
@@ -87,6 +100,14 @@ function shoot(e) {
 
 // --- 그리기 함수들 ---
 function drawPlayer() {
+    // 쉴드 효과 그리기
+    if (player.shieldTimer > 0) {
+        ctx.fillStyle = 'rgba(3, 169, 244, 0.3)'; // 쉴드 색상 (투명도)
+        ctx.beginPath();
+        ctx.arc(player.x + player.width / 2, player.y + player.height / 2, player.width, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
     // 피격 시 깜빡임 효과
     if (player.hitTimer > 0) {
         ctx.globalAlpha = 0.5 + (Math.sin(Date.now() / 10) * 0.5);
@@ -106,9 +127,34 @@ function drawBullets() {
     bullets.forEach(b => ctx.fillRect(b.x, b.y, b.width, b.height));
 }
 
+function drawEnemyBullets() {
+    ctx.fillStyle = '#FFEB3B';
+    enemyBullets.forEach(b => ctx.fillRect(b.x, b.y, b.width, b.height));
+}
+
+function drawPowerUps() {
+    powerUps.forEach(p => {
+        if (p.type === 'shield') {
+            ctx.fillStyle = '#03A9F4'; // 밝은 파란색
+            ctx.strokeStyle = 'white';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+            // 쉴드 아이콘 'S'
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 15px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('S', p.x, p.y);
+        }
+    });
+}
+
 function drawEnemies() {
     enemies.forEach(enemy => {
-        ctx.fillStyle = enemy.hitTimer > 0 ? 'white' : '#E53935'; // 맞았을 때 하얗게
+        ctx.fillStyle = enemy.hitTimer > 0 ? 'white' : enemy.color; // 맞았을 때 하얗게, 이제 적의 색상 속성을 사용합니다.
         ctx.beginPath();
         ctx.moveTo(enemy.x + enemy.width / 2, enemy.y + enemy.height);
         ctx.lineTo(enemy.x, enemy.y);
@@ -136,6 +182,23 @@ function drawUI() {
     }
 }
 
+function drawStars() {
+    ctx.fillStyle = 'white';
+    stars.forEach(star => {
+        ctx.fillRect(star.x, star.y, star.size, star.size);
+    });
+}
+
+function updateStars() {
+    stars.forEach(star => {
+        star.y += star.speed;
+        if (star.y > canvas.height) {
+            star.y = 0;
+            star.x = Math.random() * canvas.width;
+        }
+    });
+}
+
 function drawGameOverScreen() {
     ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -154,15 +217,41 @@ function updateAndMove() {
     if (keys.up && player.y > 0) player.y -= player.speed;
     if (keys.down && player.y < canvas.height - player.height) player.y += player.speed;
     if (player.hitTimer > 0) player.hitTimer--;
+    if (player.shieldTimer > 0) player.shieldTimer--;
 
     // 총알
     bullets.forEach((b, i) => { b.y -= 7; if (b.y < 0) bullets.splice(i, 1); });
 
+    // 적군 총알
+    enemyBullets.forEach((b, i) => { b.y += 4; if (b.y > canvas.height) enemyBullets.splice(i, 1); });
+
     // 적군
-    enemies.forEach((e, i) => { e.y += 2; if (e.y > canvas.height) enemies.splice(i, 1); if (e.hitTimer > 0) e.hitTimer--; });
+    enemies.forEach((e, i) => { 
+        e.y += 2; 
+        if (e.y > canvas.height) enemies.splice(i, 1); 
+        if (e.hitTimer > 0) e.hitTimer--; 
+
+        // 슈터 적군 발사 로직
+        if (e.type === 'shooter') {
+            e.shootCooldown--;
+            if (e.shootCooldown <= 0) {
+                enemyBullets.push({
+                    x: e.x + e.width / 2 - 2.5,
+                    y: e.y + e.height,
+                    width: 5,
+                    height: 10,
+                    color: '#FFEB3B' // 노란색 총알
+                });
+                e.shootCooldown = Math.random() * 100 + 100; // 다음 발사 쿨다운
+            }
+        }
+    });
 
     // 파티클
     particles.forEach((p, i) => { p.x += p.vx; p.y += p.vy; p.life -= 0.02; if (p.life <= 0) particles.splice(i, 1); });
+
+    // 파워업
+    powerUps.forEach((p, i) => { p.y += 1; if (p.y > canvas.height) powerUps.splice(i, 1); });
 
     // 난이도 조절
     time++;
@@ -170,7 +259,18 @@ function updateAndMove() {
 
     // 적 생성
     if (Math.random() < enemySpawnRate) {
-        enemies.push({ x: Math.random() * (canvas.width - 40), y: 0, width: 40, height: 40, hp: 2, hitTimer: 0 });
+        const isShooter = Math.random() < 0.3; // 30% 확률로 슈터 적 생성
+        enemies.push({
+            x: Math.random() * (canvas.width - 40),
+            y: 0,
+            width: 40,
+            height: 40,
+            hp: isShooter ? 3 : 2,
+            hitTimer: 0,
+            type: isShooter ? 'shooter' : 'normal',
+            color: isShooter ? '#9C27B0' : '#E53935', // 보라색 vs 빨간색
+            shootCooldown: isShooter ? Math.random() * 100 + 50 : 0
+        });
     }
 }
 
@@ -191,6 +291,16 @@ function checkCollisions() {
                     }
                     enemies.splice(j, 1);
                     score++;
+
+                    // 15% 확률로 쉴드 아이템 드랍
+                    if (Math.random() < 0.15) {
+                        powerUps.push({
+                            x: e.x + e.width / 2,
+                            y: e.y + e.height / 2,
+                            size: 15,
+                            type: 'shield'
+                        });
+                    }
                 }
                 break; // 다음 총알로 넘어감
             }
@@ -201,11 +311,42 @@ function checkCollisions() {
     for (let i = enemies.length - 1; i >= 0; i--) {
         const e = enemies[i];
         if (player.x < e.x + e.width && player.x + player.width > e.x && player.y < e.y + e.height && player.y + player.height > e.y) {
-            playSound('hit');
-            enemies.splice(i, 1);
-            player.hp--;
-            player.hitTimer = 30; // 30프레임 동안 무적 및 깜빡임
-            if (player.hp <= 0) gameOver = true;
+            // 쉴드 상태가 아닐 때만 데미지를 받음
+            if (player.shieldTimer <= 0) {
+                playSound('hit');
+                player.hp--;
+                player.hitTimer = 30; // 30프레임 동안 무적 및 깜빡임
+                if (player.hp <= 0) gameOver = true;
+            }
+            enemies.splice(i, 1); // 쉴드 상태여도 적은 부딪히면 사라짐
+        }
+    }
+
+    // 플레이어 vs 적군 총알
+    for (let i = enemyBullets.length - 1; i >= 0; i--) {
+        const b = enemyBullets[i];
+        if (player.x < b.x + b.width && player.x + player.width > b.x && player.y < b.y + b.height && player.y + player.height > b.y) {
+            // 쉴드 상태가 아닐 때만 데미지를 받음
+            if (player.shieldTimer <= 0) {
+                playSound('hit');
+                player.hp--;
+                player.hitTimer = 30; // 30프레임 동안 무적 및 깜빡임
+                if (player.hp <= 0) gameOver = true;
+            }
+            enemyBullets.splice(i, 1); // 쉴드 상태여도 총알은 부딪히면 사라짐
+        }
+    }
+
+    // 플레이어 vs 파워업
+    for (let i = powerUps.length - 1; i >= 0; i--) {
+        const p = powerUps[i];
+        // 원형 충돌 감지
+        const dist = Math.hypot(player.x + player.width / 2 - p.x, player.y + player.height / 2 - p.y);
+        if (dist < player.width / 2 + p.size) {
+            if (p.type === 'shield') {
+                player.shieldTimer = 300; // 5초 (60fps 기준)
+            }
+            powerUps.splice(i, 1);
         }
     }
 
@@ -219,13 +360,20 @@ function checkCollisions() {
 // --- 메인 게임 루프 ---
 function update() {
     if (!gameOver) {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = 'black';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        updateStars();
+        drawStars();
+
         updateAndMove();
         checkCollisions();
         drawEnemies();
         drawPlayer();
         drawBullets();
+        drawEnemyBullets();
         drawParticles();
+        drawPowerUps();
         drawUI();
         requestAnimationFrame(update);
     } else {
